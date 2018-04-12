@@ -1,0 +1,16 @@
+import java.awt.BorderLayout;
+
+import javax.swing.*;
+public class MancalaTester {
+	public static void main (String[] args){
+		JFrame frame = new JFrame(); 
+		frame.setSize(850, 400);
+		frame.setLayout(new BorderLayout());
+		frame.setTitle("Mancala");
+		frame.add(new MancalaBoard());
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
+		
+	}
+
+}
