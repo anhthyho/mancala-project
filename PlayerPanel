@@ -9,19 +9,37 @@ public class PlayerPanel extends JPanel {
 	private double width; 
 	private double height;
 	private ArrayList<Ellipse2D.Double> circles;
+	
+	/**
+	 * creates the playerpanel and initializes variables
+	 * @author anhthy
+	 */
 	public PlayerPanel(){
 		width = getWidth()/8;
 		height = getHeight()/2;
 		circles = new ArrayList<>(); 
 	}
 	
+	/**
+	 * returns the width of the panel
+	 * @author anhthy
+	 */
 	public int getWidth(){
 		return PANEL_WIDTH;
 	}
 	
+	/**
+	 * gets the height of the panel
+	 * @author anhthy
+	 */
 	public int getHeight(){
 		return PANEL_HEIGHT;
 	}
+	
+	/**
+	 * paints the board with the pits and circles
+	 * @author anhthy
+	 */
 	public void paintComponent(Graphics g){
 		
 		Graphics2D g2 = (Graphics2D)g;
