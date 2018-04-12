@@ -1,0 +1,11 @@
+import java.awt.BorderLayout;
+
+import javax.swing.*;
+public class MancalaBoard extends JPanel {
+
+	public MancalaBoard(){
+		setSize(800,400);
+		setLayout(new BorderLayout()); 
+		add(new PlayerPanel(), BorderLayout.CENTER);
+	}
+}
