@@ -1,27 +1,87 @@
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.awt.geom.*;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class PlayerPanel extends JPanel {
-	private static final int PANEL_WIDTH = 800;
+public class PlayerPanel extends JPanel implements ChangeListener {
+
+	
+	
+	private static final int PANEL_WIDTH = 1000;
 	private static final int PANEL_HEIGHT = 400;
 	private double width;
 	private double height;
 	private ArrayList<Ellipse2D.Double> circles;
 	private ArrayList<Ellipse2D.Double> beads;
+	private MancalaModel mancalaModel;
 
 	/**
 	 * creates the playerpanel and initializes variables
 	 * 
 	 * @author anhthy
 	 */
-	public PlayerPanel() {
+
+	private double xCoord;
+	private double yCoord;
+	private double barHeight;
+	private ArrayList<Double> d;
+	private int dm;
+	private double max;
+	private Point mousePoint;
+
+	/**
+	 * create MouseListeners
+	 * 
+	 * @author anhth
+	 *
+	 */
+	private class MouseListeners extends MouseAdapter {
+		/**
+		 * updates data when mouse pressed
+		 * 
+		 * @param e
+		 *            is the event when Mouse is pressed
+		 */
+		public void mousePressed(MouseEvent e) {
+			mousePoint = e.getPoint();
+			xCoord = mousePoint.getX();
+			yCoord = mousePoint.getY();
+
+		}
+
+		@Override
+		/**
+		 * allows mouse wheel to be moved
+		 * 
+		 * @param arg0
+		 *            is where mouse wheel is moved
+		 */
+		public void mouseWheelMoved(MouseWheelEvent arg0) {
+			if (mousePoint == null) {
+				return;
+			}
+			Point lastMousePoint = mousePoint;
+			mousePoint = arg0.getPoint();
+			double dx = mousePoint.getX() - lastMousePoint.getX();
+			double dy = mousePoint.getY() - lastMousePoint.getY();
+
+		}
+
+	}
+
+	public PlayerPanel(MancalaModel m){
+		mancalaModel = m; 
 		width = getWidth() / 8;
 		height = getHeight() / 2;
-		circles = new ArrayList<>();
+		circles = mancalaModel.getData(); 
 		beads = new ArrayList<>();
 	}
 
@@ -51,55 +111,16 @@ public class PlayerPanel extends JPanel {
 	public void paintComponent(Graphics g) {
 
 		Graphics2D g2 = (Graphics2D) g;
-		double x = width;
-		double y = 25;
 		g2.setColor(Color.PINK);
 
-		double dx = width - 10;
-		double dy = width + 10;
-
-		Ellipse2D.Double circle = new Ellipse2D.Double(x, y, dx, dy);
-		Ellipse2D.Double circle2 = new Ellipse2D.Double(x * 2, y, dx, dy);
-		Ellipse2D.Double circle3 = new Ellipse2D.Double(x * 3, y, dx, dy);
-		Ellipse2D.Double circle4 = new Ellipse2D.Double(x * 4, y, dx, dy);
-		Ellipse2D.Double circle5 = new Ellipse2D.Double(x * 5, y, dx, dy);
-		Ellipse2D.Double circle6 = new Ellipse2D.Double(x * 6, y, dx, dy);
-		Ellipse2D.Double pitCircle = new Ellipse2D.Double(5, y, width - 10, height * 2 - 100);
-		circles.add(circle);
-		circles.add(circle2);
-		circles.add(circle3);
-		circles.add(circle4);
-		circles.add(circle5);
-		circles.add(circle6);
-		circles.add(pitCircle);
-
-		x = width;
-		y = height + 15;
-
-		Ellipse2D.Double bcircle = new Ellipse2D.Double(x, y, dx, dy);
-		Ellipse2D.Double bcircle2 = new Ellipse2D.Double(x * 2, y, dx, dy);
-		Ellipse2D.Double bcircle3 = new Ellipse2D.Double(x * 3, y, dx, dy);
-		Ellipse2D.Double bcircle4 = new Ellipse2D.Double(x * 4, y, dx, dy);
-		Ellipse2D.Double bcircle5 = new Ellipse2D.Double(x * 5, y, dx, dy);
-		Ellipse2D.Double bcircle6 = new Ellipse2D.Double(x * 6, y, dx, dy);
-		Ellipse2D.Double bpitCircle = new Ellipse2D.Double(5 + 7 * x, 25, width - 10, height * 2 - 100);
-		circles.add(bcircle);
-		circles.add(bcircle2);
-		circles.add(bcircle3);
-		circles.add(bcircle4);
-		circles.add(bcircle5);
-		circles.add(bcircle6);
-		circles.add(bpitCircle);
-		System.out.println(circles.get(13));
-		System.out.println(bpitCircle); 
 		
-		ArrayList<Ellipse2D.Double> pits = new ArrayList<>(); 
-		for (int i=0; i<circles.size();i++){
-			if (i!=13){
-				if (i!=6){
+		ArrayList<Ellipse2D.Double> pits = new ArrayList<>();
+		for (int i = 0; i < circles.size(); i++) {
+			if (i != 13) {
+				if (i != 6) {
 					pits.add(circles.get(i));
 				}
-				
+
 			}
 		}
 
@@ -107,19 +128,18 @@ public class PlayerPanel extends JPanel {
 		for (int i = 0; i < circles.size(); i++) {
 			Ellipse2D.Double drawn = circles.get(i);
 
-			if (pits.contains(circles.get(i))){
+			if (pits.contains(circles.get(i))) {
 				for (int j = 0; j < 3; j++) {
 					bead = new Bead(drawn).create();
 					beads.add(bead);
 				}
 			}
-			
 
 			g2.fill(drawn);
 			g2.draw(drawn);
 		}
 
-		for (int i = 0; i < 36;i++){
+		for (int i = 0; i < 36; i++) {
 			Ellipse2D.Double b = beads.get(i);
 			Random rand = new Random();
 			Color randomColor = new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat());
@@ -127,5 +147,11 @@ public class PlayerPanel extends JPanel {
 			g2.fill(b);
 			g2.draw(b);
 		}
+	}
+
+	@Override
+	public void stateChanged(ChangeEvent e) {
+		// TODO Auto-generated method stub
+
 	}
 }
