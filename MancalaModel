@@ -5,11 +5,11 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 public class MancalaModel {
-	private ArrayList<Ellipse2D.Double> data;
+	private ArrayList<Double> data;
 	private ArrayList<ChangeListener> listeners;
 
-	public MancalaModel(ArrayList<Ellipse2D.Double> pits) {
-		data = pits;
+	public MancalaModel(ArrayList<Double> pitNum) {
+		data = pitNum;
 		listeners = new ArrayList<ChangeListener>();
 	}
 
@@ -18,8 +18,8 @@ public class MancalaModel {
 	 * 
 	 * @return the data in an ArrayList
 	 */
-	public ArrayList<Ellipse2D.Double> getData() {
-		return (ArrayList<Ellipse2D.Double>) (data.clone());
+	public ArrayList<Double> getData() {
+		return (ArrayList<Double>) (data.clone());
 	}
 
 	/**
@@ -42,7 +42,7 @@ public class MancalaModel {
 	 * @param value
 	 *            the new value
 	 */
-	public void update(int location, Ellipse2D.Double value) {
+	public void update(int location, Double value) {
 		data.set(location, value);
 		for (ChangeListener l : listeners) {
 			l.stateChanged(new ChangeEvent(this));
