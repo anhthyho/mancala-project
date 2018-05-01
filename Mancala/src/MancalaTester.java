@@ -1,6 +1,7 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 
@@ -13,7 +14,7 @@ public class MancalaTester {
 		frame.setTitle("Mancala");
 	
 		
-		ArrayList<Ellipse2D.Double> circles = new ArrayList<>(); 
+		ArrayList<Shape> circles = new ArrayList<>(); 
 		double width = 900 / 8;
 		double height = 400 / 2;
 		double x = width;

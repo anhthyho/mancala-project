@@ -19,8 +19,8 @@ public class PlayerPanel extends JPanel implements ChangeListener {
 	private static final int PANEL_HEIGHT = 400;
 	private double width;
 	private double height;
-	private ArrayList<Ellipse2D.Double> circles;
-	private ArrayList<Ellipse2D.Double> beads;
+	private ArrayList<Shape> circles;
+	private ArrayList<Shape> beads;
 	private MancalaModel mancalaModel;
 
 	/**
@@ -114,7 +114,7 @@ public class PlayerPanel extends JPanel implements ChangeListener {
 		g2.setColor(Color.PINK);
 
 		
-		ArrayList<Ellipse2D.Double> pits = new ArrayList<>();
+		ArrayList<Shape> pits = new ArrayList<>();
 		for (int i = 0; i < circles.size(); i++) {
 			if (i != 13) {
 				if (i != 6) {
@@ -124,9 +124,9 @@ public class PlayerPanel extends JPanel implements ChangeListener {
 			}
 		}
 
-		Ellipse2D.Double bead;
+		Shape bead;
 		for (int i = 0; i < circles.size(); i++) {
-			Ellipse2D.Double drawn = circles.get(i);
+			Shape drawn = circles.get(i);
 
 			if (pits.contains(circles.get(i))) {
 				for (int j = 0; j < 3; j++) {
@@ -140,7 +140,7 @@ public class PlayerPanel extends JPanel implements ChangeListener {
 		}
 
 		for (int i = 0; i < 36; i++) {
-			Ellipse2D.Double b = beads.get(i);
+			Shape b = beads.get(i);
 			Random rand = new Random();
 			Color randomColor = new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat());
 			g2.setPaint(randomColor);
