@@ -10,14 +10,15 @@ public class Bead{
 	private double y;
 	private static int BEAD_SIZE = 20;
 	private int pitnum;
-	public Bead(Ellipse2D c, int j){
+	public Bead(Shape c, int j){
 		pitnum = j;
-		x = c.getCenterX() + pitnum*BEAD_SIZE - 2*BEAD_SIZE;
+		Rectangle2D bounds = c.getBounds2D();
+		x = bounds.getCenterX() + pitnum*BEAD_SIZE - 2*BEAD_SIZE;
 		if (pitnum<=3 ){
-			y = c.getCenterY() - BEAD_SIZE ;
+			y = bounds.getCenterY() - BEAD_SIZE ;
 		}
 		else if (pitnum>3){
-			y = c.getCenterY() ;
+			y = bounds.getCenterY() ;
 		}
 		
 	}

@@ -17,9 +17,10 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 	private double width;
 	private double height;
 	private ArrayList<Double> pitNum;
-	private Ellipse2D.Double[] beads;
-	private Ellipse2D.Double[] circles;
+	private Shape[] beads;
+	private Shape[] shapes;
 	private MancalaModel mancalaModel;
+	private ViewStrategy viewStrategy;
 
 	/**
 	 * creates the playerpanel and initializes variables
@@ -44,10 +45,10 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 		 */
 		public void mousePressed(MouseEvent e) {
 			mousePoint = e.getPoint();
-			Ellipse2D.Double contained = new Ellipse2D.Double();
+			Shape contained = viewStrategy.createShape();
 			int changePos = 0;
-			for (int i = 0; i < circles.length; i++) {
-				Ellipse2D.Double current = circles[i];
+			for (int i = 0; i < shapes.length; i++) {
+				Shape current = shapes[i];
 				if (current.contains(mousePoint)) {
 					contained = current;
 					System.out.println(i + "Points: " + mousePoint.getX() + " " + mousePoint.getY());
@@ -89,9 +90,12 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 	public PlayerPanel(MancalaModel m) {
 		mancalaModel = m;
 		pitNum = mancalaModel.getData();
-
-		circles = new Ellipse2D.Double[14];
-		beads = new Ellipse2D.Double[36];
+		
+		//by default viewStrategy is Ellipse
+		viewStrategy = new EllipseViewStrategy();
+		
+		shapes = new Shape[14];
+		beads = new Shape[36];
 
 		width = getWidth() / 8;
 		height = getHeight() / 2;
@@ -132,43 +136,43 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 				double dx = width - 10;
 				double dy = width + 10;
 
-				Ellipse2D.Double circle = new Ellipse2D.Double(w, h, dx, dy);
-				Ellipse2D.Double circle2 = new Ellipse2D.Double(w * 2, h, dx, dy);
-				Ellipse2D.Double circle3 = new Ellipse2D.Double(w * 3, h, dx, dy);
-				Ellipse2D.Double circle4 = new Ellipse2D.Double(w * 4, h, dx, dy);
-				Ellipse2D.Double circle5 = new Ellipse2D.Double(w * 5, h, dx, dy);
-				Ellipse2D.Double circle6 = new Ellipse2D.Double(w * 6, h, dx, dy);
-				Ellipse2D.Double pitCircle = new Ellipse2D.Double(5, h, width - 10, height * 2 - 100);
-				circles[5] = (circle);
-				circles[4] = (circle2);
-				circles[3] = (circle3);
-				circles[2] = (circle4);
-				circles[1] = (circle5);
-				circles[0] = (circle6);
-				circles[6] = (pitCircle);
+				Shape circle = viewStrategy.createShape(w, h, dx, dy);
+				Shape circle2 = viewStrategy.createShape(w * 2, h, dx, dy);
+				Shape circle3 = viewStrategy.createShape(w * 3, h, dx, dy);
+				Shape circle4 = viewStrategy.createShape(w * 4, h, dx, dy);
+				Shape circle5 = viewStrategy.createShape(w * 5, h, dx, dy);
+				Shape circle6 = viewStrategy.createShape(w * 6, h, dx, dy);
+				Shape pitCircle = viewStrategy.createShape(5, h, width - 10, height * 2 - 100);
+				shapes[5] = (circle);
+				shapes[4] = (circle2);
+				shapes[3] = (circle3);
+				shapes[2] = (circle4);
+				shapes[1] = (circle5);
+				shapes[0] = (circle6);
+				shapes[6] = (pitCircle);
 
 				w = width;
 				h = height + 15;
 
-				Ellipse2D.Double bcircle = new Ellipse2D.Double(w, h, dx, dy);
-				Ellipse2D.Double bcircle2 = new Ellipse2D.Double(w * 2, h, dx, dy);
-				Ellipse2D.Double bcircle3 = new Ellipse2D.Double(w * 3, h, dx, dy);
-				Ellipse2D.Double bcircle4 = new Ellipse2D.Double(w * 4, h, dx, dy);
-				Ellipse2D.Double bcircle5 = new Ellipse2D.Double(w * 5, h, dx, dy);
-				Ellipse2D.Double bcircle6 = new Ellipse2D.Double(w * 6, h, dx, dy);
-				Ellipse2D.Double bpitCircle = new Ellipse2D.Double(5 + 7 * w, 25, width - 10, height * 2 - 100);
-				circles[7] = (bcircle);
-				circles[8] = (bcircle2);
-				circles[9] = (bcircle3);
-				circles[10] = (bcircle4);
-				circles[11] = (bcircle5);
-				circles[12] = (bcircle6);
-				circles[13] = (bpitCircle);
+				Shape bcircle = viewStrategy.createShape(w, h, dx, dy);
+				Shape bcircle2 = viewStrategy.createShape(w * 2, h, dx, dy);
+				Shape bcircle3 = viewStrategy.createShape(w * 3, h, dx, dy);
+				Shape bcircle4 = viewStrategy.createShape(w * 4, h, dx, dy);
+				Shape bcircle5 = viewStrategy.createShape(w * 5, h, dx, dy);
+				Shape bcircle6 = viewStrategy.createShape(w * 6, h, dx, dy);
+				Shape bpitCircle = viewStrategy.createShape(5 + 7 * w, 25, width - 10, height * 2 - 100);
+				shapes[7] = (bcircle);
+				shapes[8] = (bcircle2);
+				shapes[9] = (bcircle3);
+				shapes[10] = (bcircle4);
+				shapes[11] = (bcircle5);
+				shapes[12] = (bcircle6);
+				shapes[13] = (bpitCircle);
 
 				int beadCount = 0;
-				Ellipse2D.Double bead;
-				for (int i = 0; i < circles.length; i++) {
-					Ellipse2D.Double drawn = circles[i];
+				Shape bead;
+				for (int i = 0; i < shapes.length; i++) {
+					Shape drawn = shapes[i];
 
 					for (int j = 0; j < pitNum.get(i); j++) {
 						bead = new Bead(drawn, j).create();
@@ -183,7 +187,7 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 				}
 
 				for (int i = 0; i < beads.length; i++) {
-					Ellipse2D.Double b = beads[i];
+					Shape b = beads[i];
 					g2.setPaint(Color.GREEN);
 					g2.fill(b);
 					g2.draw(b);
@@ -198,6 +202,9 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 		pack();
 		setVisible(true);
 	}
+	
+	public void setViewStrategy(ViewStrategy viewStrategy) 
+	{	this.viewStrategy = viewStrategy;	}
 
 	@Override
 	public void stateChanged(ChangeEvent e) {
