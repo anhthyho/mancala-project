@@ -45,16 +45,25 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 		public void mousePressed(MouseEvent e) {
 			mousePoint = e.getPoint();
 			Ellipse2D.Double contained = new Ellipse2D.Double();
-			int changePos=0;
+			int changePos = 0;
 			for (int i = 0; i < circles.length; i++) {
-				if (circles[i].contains(mousePoint)) {
-					contained = circles[i];
-					changePos = i;
-				}
-			}
-			System.out.println(changePos + "Points: " + mousePoint.getX() +" "+ mousePoint.getY());
+				Ellipse2D.Double current = circles[i];
+				if (current.contains(mousePoint)) {
+					contained = current;
+					System.out.println(i + "Points: " + mousePoint.getX() + " " + mousePoint.getY());
+					double numberOfStones = pitNum.get(i);
 
-			
+					mancalaModel.update(i, (double) 0);
+					for (int j = i; j < numberOfStones + i; j++) {
+						System.out.println((j + 1) % 14);
+						mancalaModel.update((j + 1) % 14, (pitNum.get((j + 1) % 14) + 1));
+
+					}
+
+				}
+
+			}
+
 		}
 
 		@Override
@@ -130,13 +139,13 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 				Ellipse2D.Double circle5 = new Ellipse2D.Double(w * 5, h, dx, dy);
 				Ellipse2D.Double circle6 = new Ellipse2D.Double(w * 6, h, dx, dy);
 				Ellipse2D.Double pitCircle = new Ellipse2D.Double(5, h, width - 10, height * 2 - 100);
-				circles[12] = (circle);
-				circles[11] = (circle2);
-				circles[10] = (circle3);
-				circles[9] = (circle4);
-				circles[8] = (circle5);
-				circles[7] = (circle6);
-				circles[13] = (pitCircle);
+				circles[5] = (circle);
+				circles[4] = (circle2);
+				circles[3] = (circle3);
+				circles[2] = (circle4);
+				circles[1] = (circle5);
+				circles[0] = (circle6);
+				circles[6] = (pitCircle);
 
 				w = width;
 				h = height + 15;
@@ -148,13 +157,13 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 				Ellipse2D.Double bcircle5 = new Ellipse2D.Double(w * 5, h, dx, dy);
 				Ellipse2D.Double bcircle6 = new Ellipse2D.Double(w * 6, h, dx, dy);
 				Ellipse2D.Double bpitCircle = new Ellipse2D.Double(5 + 7 * w, 25, width - 10, height * 2 - 100);
-				circles[5] = (bcircle);
-				circles[4] = (bcircle2);
-				circles[3] = (bcircle3);
-				circles[2] = (bcircle4);
-				circles[1] = (bcircle5);
-				circles[0] = (bcircle6);
-				circles[6] = (bpitCircle);
+				circles[7] = (bcircle);
+				circles[8] = (bcircle2);
+				circles[9] = (bcircle3);
+				circles[10] = (bcircle4);
+				circles[11] = (bcircle5);
+				circles[12] = (bcircle6);
+				circles[13] = (bpitCircle);
 
 				int beadCount = 0;
 				Ellipse2D.Double bead;
