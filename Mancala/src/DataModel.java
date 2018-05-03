@@ -30,7 +30,7 @@ public class DataModel {
 	}
 	
 	/**
-	 * adds to a specific pit
+	 * use to add stones to each pit at the beginning of the game with limit per pit
 	 * @param index
 	 * @param amount
 	 */
