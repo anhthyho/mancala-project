@@ -10,15 +10,28 @@ public class Bead{
 	private double y;
 	private static int BEAD_SIZE = 20;
 	private int pitnum;
-	public Bead(Shape c, int j){
+	public Bead(Shape s, int j){
+		
 		pitnum = j;
-		Rectangle2D bounds = c.getBounds2D();
-		x = bounds.getCenterX() + pitnum*BEAD_SIZE - 2*BEAD_SIZE;
-		if (pitnum<=3 ){
-			y = bounds.getCenterY() - BEAD_SIZE ;
+		Rectangle2D c = s.getBounds2D(); 
+		if (pitnum<3 ){
+			x = c.getCenterX() + pitnum*BEAD_SIZE - 2*BEAD_SIZE;
+			y = c.getCenterY() - BEAD_SIZE ;
 		}
-		else if (pitnum>3){
-			y = bounds.getCenterY() ;
+		else if (pitnum<6){
+			pitnum = j-3;
+			x = c.getCenterX() + pitnum*BEAD_SIZE -2*BEAD_SIZE ;
+			y = c.getCenterY() ;
+		}
+		else if (pitnum<9){
+			pitnum = j-6;
+			x = c.getCenterX() + pitnum*BEAD_SIZE-2*BEAD_SIZE ;
+			y = c.getCenterY() + BEAD_SIZE;
+		}
+		else if (pitnum<12){
+			pitnum = j-9;
+			x = c.getCenterX() + pitnum*BEAD_SIZE -2*BEAD_SIZE;
+			y = c.getCenterY() + 2*BEAD_SIZE;
 		}
 		
 	}
