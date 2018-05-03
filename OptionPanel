@@ -1,0 +1,83 @@
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.*;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.ComponentOrientation;
+import java.awt.FlowLayout;
+import java.awt.event.*;
+import java.util.ArrayList;
+
+public class OptionPanel extends JFrame implements ChangeListener{
+	private MancalaModel mancalaModel;
+	private ArrayList<Color> mColors; 
+	private ArrayList<ViewStrategy> mShape;
+	public OptionPanel(MancalaModel m){
+		mancalaModel = m;
+		mColors = mancalaModel.getColors();
+		mShape = mancalaModel.getShape();
+		
+		this.setLayout(new FlowLayout());
+		this.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+		JButton pinkGreen = new JButton("Pink and Green");
+		pinkGreen.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				setPitColor(Color.PINK);
+				setBeadColor(Color.GREEN);
+			}
+		});
+		add(pinkGreen); 
+		
+		
+		JButton redBlue = new JButton("Red and Blue");
+		redBlue.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				setPitColor(Color.RED);
+				setBeadColor(Color.BLUE);
+			}
+		});
+		add(redBlue);
+		
+		JButton rectangleShape = new JButton("Rectangle Shape"); 
+		rectangleShape.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				setShape(new RectangleViewStrategy()); 
+			}
+		});
+		
+		JButton circleShape = new JButton("Circular Shape"); 
+		circleShape.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				setShape(new EllipseViewStrategy()); 
+			}
+		});
+		
+		add(rectangleShape);
+		add(circleShape);
+		
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		pack();
+		setVisible(true);
+	}
+	
+	public void setShape(ViewStrategy s){
+		mancalaModel.updateShape(0,s); 
+	}
+	
+	public void setPitColor(Color c){
+		mancalaModel.updateColor(0, c);
+	}
+	
+	public void setBeadColor(Color c){
+		mancalaModel.updateColor(1, c);
+	}
+	@Override
+	public void stateChanged(ChangeEvent e) {
+		mColors = mancalaModel.getColors();
+		mShape = mancalaModel.getShape();
+		repaint(); 
+		
+	}
+	
+}
