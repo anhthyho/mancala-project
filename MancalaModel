@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 
@@ -6,10 +7,14 @@ import javax.swing.event.ChangeListener;
 
 public class MancalaModel {
 	private ArrayList<Double> data;
+	private ArrayList<Color> colors; 
 	private ArrayList<ChangeListener> listeners;
+	private ArrayList<ViewStrategy> shape;
 
-	public MancalaModel(ArrayList<Double> pitNum) {
+	public MancalaModel(ArrayList<Double> pitNum, ArrayList<Color>colors, ArrayList<ViewStrategy> shape) {
 		data = pitNum;
+		this.colors = colors; 
+		this.shape = shape; 
 		listeners = new ArrayList<ChangeListener>();
 	}
 
@@ -21,6 +26,14 @@ public class MancalaModel {
 	public ArrayList<Double> getData() {
 		return (ArrayList<Double>) (data.clone());
 	}
+	
+	public ArrayList<Color> getColors(){
+		return (ArrayList<Color>) (colors.clone()); 
+	}
+	
+	public ArrayList<ViewStrategy> getShape(){
+		return (ArrayList<ViewStrategy>)(shape.clone()); 
+	}
 
 	/**
 	 * Attach a listener to the Model
@@ -30,6 +43,10 @@ public class MancalaModel {
 	 */
 	public void attach(PlayerPanel playerPanel) {
 		listeners.add(playerPanel);
+	}
+	
+	public void attach(OptionPanel op){
+		listeners.add(op); 
 	}
 
 	
@@ -44,6 +61,20 @@ public class MancalaModel {
 	 */
 	public void update(int location, Double value) {
 		data.set(location, value);
+		for (ChangeListener l : listeners) {
+			l.stateChanged(new ChangeEvent(this));
+		}
+	}
+	
+	public void updateColor(int location, Color value) {
+		colors.set(location, value);
+		for (ChangeListener l : listeners) {
+			l.stateChanged(new ChangeEvent(this));
+		}
+	}
+	
+	public void updateShape(int location, ViewStrategy c){
+		shape.set(location, c);
 		for (ChangeListener l : listeners) {
 			l.stateChanged(new ChangeEvent(this));
 		}
