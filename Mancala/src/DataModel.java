@@ -4,7 +4,7 @@ public class DataModel {
 
 	final int MAX_PER_PIT = 4;
 	
-	ArrayList<Integer> pits;
+	private ArrayList<Integer> pits;
 	
 	int pitNumber;
 	int pitState;
@@ -76,7 +76,7 @@ public class DataModel {
 	 * Save the state of a pit, call before making move
 	 * @param pitNum
 	 */
-	public void SaveState(int pitNum)
+	private void SaveState(int pitNum)
 	{
 		pitState = pits.get(pitNum);
 		pitNumber = pitNum;
