@@ -92,7 +92,7 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 		pitNum = mancalaModel.getData();
 		
 		//by default viewStrategy is Ellipse
-		viewStrategy = new EllipseViewStrategy();
+		
 		
 		shapes = new Shape[14];
 		beads = new Shape[36];
@@ -124,9 +124,10 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 			 * @author anhthy
 			 */
 			public void paintIcon(Component c, Graphics g, int x, int y) {
+				viewStrategy = m.getShape().get(0);
 
 				Graphics2D g2 = (Graphics2D) g;
-				g2.setColor(Color.PINK);
+				g2.setColor(m.getColors().get(0));
 
 				double width = 900 / 8;
 				double height = 400 / 2;
@@ -188,7 +189,7 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 
 				for (int i = 0; i < beads.length; i++) {
 					Shape b = beads[i];
-					g2.setPaint(Color.GREEN);
+					g2.setPaint(m.getColors().get(1));
 					g2.fill(b);
 					g2.draw(b);
 				}
@@ -203,8 +204,6 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 		setVisible(true);
 	}
 	
-	public void setViewStrategy(ViewStrategy viewStrategy) 
-	{	this.viewStrategy = viewStrategy;	}
 
 	@Override
 	public void stateChanged(ChangeEvent e) {
