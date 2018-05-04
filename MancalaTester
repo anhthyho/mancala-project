@@ -27,7 +27,6 @@ public class MancalaTester {
 		
 		ArrayList<ViewStrategy> shape = new ArrayList<>(); 
 		shape.add(new EllipseViewStrategy()); 
-		
 		MancalaModel m = new MancalaModel(pitNum, colors, shape); 
 		PlayerPanel p = new PlayerPanel(m); 
 		OptionPanel op = new OptionPanel(m);
