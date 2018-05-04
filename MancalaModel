@@ -10,11 +10,17 @@ public class MancalaModel {
 	private ArrayList<Color> colors; 
 	private ArrayList<ChangeListener> listeners;
 	private ArrayList<ViewStrategy> shape;
+	private boolean[] players; 
+	private int pitNumber;
+	private double pitState;
 
 	public MancalaModel(ArrayList<Double> pitNum, ArrayList<Color>colors, ArrayList<ViewStrategy> shape) {
 		data = pitNum;
 		this.colors = colors; 
 		this.shape = shape; 
+		players = new boolean[2]; 
+		players[0]=true; //1 means their turn
+		players[1]=false; //0 means not their turn 
 		listeners = new ArrayList<ChangeListener>();
 	}
 
@@ -34,6 +40,10 @@ public class MancalaModel {
 	public ArrayList<ViewStrategy> getShape(){
 		return (ArrayList<ViewStrategy>)(shape.clone()); 
 	}
+	
+	public boolean[] getPlayers(){
+		return (boolean[])(players.clone()); 
+	}
 
 	/**
 	 * Attach a listener to the Model
@@ -48,6 +58,8 @@ public class MancalaModel {
 	public void attach(OptionPanel op){
 		listeners.add(op); 
 	}
+	
+	
 
 	
 
@@ -59,7 +71,8 @@ public class MancalaModel {
 	 * @param value
 	 *            the new value
 	 */
-	public void update(int location, Double value) {
+	public void update(int location, Double value) { 
+		System.out.println("update: " + location +", "+ value);
 		data.set(location, value);
 		for (ChangeListener l : listeners) {
 			l.stateChanged(new ChangeEvent(this));
@@ -79,4 +92,34 @@ public class MancalaModel {
 			l.stateChanged(new ChangeEvent(this));
 		}
 	}
+	
+	public void Decrement(int pitNum)
+	{
+		data.set(pitNum, data.get(pitNum) - 1);
+		for (ChangeListener l : listeners) {
+			l.stateChanged(new ChangeEvent(this));
+		}
+		System.out.println("dec: "+ pitNum +", "+ (data.get(pitNum)));
+	}
+	
+	/**
+	 * Save the state of a pit, call before making move
+	 * @param pitNum
+	 */
+	public void saveState(int pitNum)
+	{
+		pitState = data.get(pitNum);
+		pitNumber = pitNum;
+		
+	}
+	
+	public int returnPitNum(){
+		return pitNumber; 
+	}
+	
+	public double returnPitState(){
+		return pitState; 
+	}
+	
+	
 }
