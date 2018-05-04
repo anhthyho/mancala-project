@@ -3,6 +3,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -19,6 +21,7 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 	private ArrayList<Double> pitNum;
 	private Shape[] beads;
 	private Shape[] shapes;
+	private boolean[] players;
 	private MancalaModel mancalaModel;
 	private ViewStrategy viewStrategy;
 
@@ -47,24 +50,47 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 			mousePoint = e.getPoint();
 			Shape contained = viewStrategy.createShape();
 			int changePos = 0;
+
+			players = mancalaModel.getPlayers();
+
 			for (int i = 0; i < shapes.length; i++) {
 				Shape current = shapes[i];
+
 				if (current.contains(mousePoint)) {
 					contained = current;
-					System.out.println(i + "Points: " + mousePoint.getX() + " " + mousePoint.getY());
 					double numberOfStones = pitNum.get(i);
-
+					mancalaModel.saveState(i);
 					mancalaModel.update(i, (double) 0);
-					for (int j = i; j < numberOfStones + i; j++) {
-						System.out.println((j + 1) % 14);
-						mancalaModel.update((j + 1) % 14, (pitNum.get((j + 1) % 14) + 1));
 
+					if (players[0]=true){
+						for (int j = i; j < numberOfStones + i; j++) {
+							if (j + 1 != 13) {
+
+								mancalaModel.update((j + 1) % 14, (pitNum.get((j + 1) % 14) + 1));
+							} else if (j + 1 == 13) {
+								mancalaModel.update((int) (numberOfStones + i + 1) % 14,
+										(pitNum.get((int) (numberOfStones + i + 1) % 14) + 1));
+							}
+
+						}
 					}
+					else{
+						for (int j = i; j < numberOfStones + i; j++) {
+							if (j + 1 != 6) {
+
+								mancalaModel.update((j + 1) % 14, (pitNum.get((j + 1) % 14) + 1));
+							} else if (j + 1 == 13) {
+								mancalaModel.update((int) (numberOfStones + i + 1) % 14,
+										(pitNum.get((int) (numberOfStones + i + 1) % 14) + 1));
+							}
+
+						}
+					}
+					
 
 				}
 
 			}
-
 		}
 
 		@Override
@@ -90,10 +116,9 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 	public PlayerPanel(MancalaModel m) {
 		mancalaModel = m;
 		pitNum = mancalaModel.getData();
-		
-		//by default viewStrategy is Ellipse
-		
-		
+
+		// by default viewStrategy is Ellipse
+
 		shapes = new Shape[14];
 		beads = new Shape[36];
 
@@ -199,11 +224,49 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 
 		add(new JLabel(playerIcon));
 
+		JButton undo = new JButton("Undo");
+		undo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				undo();
+			}
+		});
+
+		add(undo, BorderLayout.SOUTH);
+		this.setTitle("Mancala");
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		pack();
 		setVisible(true);
 	}
-	
+
+	public void undo() {
+
+		int pitNumber = mancalaModel.returnPitNum();
+		double pitState = mancalaModel.returnPitState();
+		mancalaModel.update(pitNumber, pitState); // set back to previous state
+		System.out.println("Undo: " + pitNumber + ", " + pitState);
+		int index = pitNumber + 1;
+
+		// revert states of subsequence pits
+		for (int i = 0; i < pitState; i++) {
+			if (players[1]){
+				if (index==6){
+					index =7;
+				}
+				else if (index==13){
+					index = 0;
+				}
+			}
+			else {
+				if (index==13){
+					index =1;
+				}
+			}
+			mancalaModel.Decrement(index);
+			index++;
+		}
+
+	}
 
 	@Override
 	public void stateChanged(ChangeEvent e) {
