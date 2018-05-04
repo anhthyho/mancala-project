@@ -13,10 +13,14 @@ public class OptionPanel extends JFrame implements ChangeListener{
 	private MancalaModel mancalaModel;
 	private ArrayList<Color> mColors; 
 	private ArrayList<ViewStrategy> mShape;
+	private ArrayList<Double> mData;
 	public OptionPanel(MancalaModel m){
 		mancalaModel = m;
 		mColors = mancalaModel.getColors();
 		mShape = mancalaModel.getShape();
+		mData = mancalaModel.getData();
+		this.setTitle("Option Panel");
+		this.setLocation(0,450);
 		
 		this.setLayout(new FlowLayout());
 		this.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
@@ -56,6 +60,7 @@ public class OptionPanel extends JFrame implements ChangeListener{
 		add(rectangleShape);
 		add(circleShape);
 		
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		pack();
 		setVisible(true);
@@ -72,6 +77,8 @@ public class OptionPanel extends JFrame implements ChangeListener{
 	public void setBeadColor(Color c){
 		mancalaModel.updateColor(1, c);
 	}
+	
+	
 	@Override
 	public void stateChanged(ChangeEvent e) {
 		mColors = mancalaModel.getColors();
