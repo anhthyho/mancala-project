@@ -13,13 +13,8 @@ public class MancalaTester {
 		frame.setTitle("Mancala");
 	
 		
-		Double pits = (double) 3; 
-		ArrayList<Double> pitNum = new ArrayList<>(); 
-		for (int i=0; i<14; i++){
-			pitNum.add(pits) ;
-		}
-		pitNum.set(6,  (double)0);
-		pitNum.set(13, (double)0); 
+		double pits = 3; 
+		
 		
 		ArrayList<Color> colors = new ArrayList<>(); 
 		colors.add(Color.YELLOW);
@@ -27,7 +22,7 @@ public class MancalaTester {
 		
 		ArrayList<ViewStrategy> shape = new ArrayList<>(); 
 		shape.add(new EllipseViewStrategy()); 
-		MancalaModel m = new MancalaModel(pitNum, colors, shape); 
+		MancalaModel m = new MancalaModel(colors, shape, pits); 
 		PlayerPanel p = new PlayerPanel(m); 
 		OptionPanel op = new OptionPanel(m);
 		m.attach(op);
