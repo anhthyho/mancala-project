@@ -1,35 +1,349 @@
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.geom.Ellipse2D;
-import java.util.ArrayList;
-
 import javax.swing.*;
-public class MancalaTester {
-	public static void main (String[] args){
-		JFrame frame = new JFrame(); 
-		frame.setSize(1000, 400);
-		frame.setLayout(new BorderLayout());
-		frame.setTitle("Mancala");
-	
-		
-		double pits = 3; 
-		
-		
-		ArrayList<Color> colors = new ArrayList<>(); 
-		colors.add(Color.YELLOW);
-		colors.add(Color.GREEN);
-		
-		ArrayList<ViewStrategy> shape = new ArrayList<>(); 
-		shape.add(new EllipseViewStrategy()); 
-		MancalaModel m = new MancalaModel(colors, shape, pits); 
-		PlayerPanel p = new PlayerPanel(m); 
-		OptionPanel op = new OptionPanel(m);
-		m.attach(op);
-		m.attach(p);
-		
-		
-		
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.geom.*;
+import java.util.ArrayList;
+import java.util.Random;
+
+public class PlayerPanel extends JFrame implements ChangeListener {
+
+	private static final int PANEL_WIDTH = 1000;
+	private static final int PANEL_HEIGHT = 400;
+	private double width;
+	private double height;
+	private ArrayList<Double> pitNum;
+	private Shape[] beads;
+	private Shape[] shapes;
+	private JTextField tf;
+	private ArrayList<Boolean> players;
+	private MancalaModel mancalaModel;
+	private ViewStrategy viewStrategy;
+
+	/**
+	 * creates the playerpanel and initializes variables
+	 * 
+	 * @author anhthy
+	 */
+
+	private Point mousePoint;
+
+	/**
+	 * create MouseListeners
+	 * 
+	 * @author anhth
+	 *
+	 */
+	private class MouseListeners extends MouseAdapter {
+		/**
+		 * updates data when mouse pressed
+		 * 
+		 * @param e
+		 *            is the event when Mouse is pressed
+		 */
+		public void mousePressed(MouseEvent e) {
+			mousePoint = e.getPoint();
+			Shape contained = viewStrategy.createShape();
+			int changePos = 0;
+
+			players = mancalaModel.getPlayers();
+
+			for (int i = 0; i < shapes.length; i++) {
+				Shape current = shapes[i];
+
+				if (current.contains(mousePoint)) {
+					contained = current;
+					double numberOfStones = pitNum.get(i);
+					mancalaModel.saveState(i);
+					mancalaModel.update(i, (double) 0);
+
+					if (players.get(0) == true) { //player 1 turn 
+						int lastPit = 0;
+						for (int j = i; j < numberOfStones + i; j++) {
+							if (j + 1 != 13) {
+
+								mancalaModel.update((j + 1) % 14, (pitNum.get((j + 1) % 14) + 1));
+								lastPit = (j + 1) % 14;
+							} else if (j + 1 == 13) {
+								mancalaModel.update((int) (numberOfStones + i + 1) % 14,
+										(pitNum.get((int) (numberOfStones + i + 1) % 14) + 1));
+								lastPit = (j + 1) % 14;
+							}
+							
+						}
+						if (lastPit >= 7 && lastPit <= 13) {
+							if (pitNum.get(lastPit)==1){
+								mancalaModel.update(6, pitNum.get(13)+pitNum.get(6));
+								mancalaModel.update(13, 0.0);
+							}
+							else {
+								mancalaModel.updatePlayer(0, false);
+								mancalaModel.updatePlayer(1, true);
+								mancalaModel.updateText("Current Player: Player 2");
+							}
+							
+						}
+						
+					} else { //player 2 turn
+						int lastPit = 0;
+						for (int j = i; j < numberOfStones + i; j++) {
+							if (j + 1 != 6) {
+
+								mancalaModel.update((j + 1) % 14, (pitNum.get((j + 1) % 14) + 1));
+								lastPit = (j + 1) % 14;
+							} else if (j + 1 == 6) {
+								mancalaModel.update((int) (numberOfStones + i + 1) % 14,
+										(pitNum.get((int) (numberOfStones + i + 1) % 14) + 1));
+								lastPit = (j + 1) % 14;
+							}
+							
+						}
+						if (lastPit >= 0 && lastPit <= 6) {
+							mancalaModel.updatePlayer(0, true);
+							mancalaModel.updatePlayer(1, false);
+							mancalaModel.updateText("Current Player: Player 1");
+						}
+
+					}
+				}
+
+			}
+
+		}
+
+		@Override
+		/**
+		 * allows mouse wheel to be moved
+		 * 
+		 * @param arg0
+		 *            is where mouse wheel is moved
+		 */
+		public void mouseWheelMoved(MouseWheelEvent arg0) {
+			if (mousePoint == null) {
+				return;
+			}
+			Point lastMousePoint = mousePoint;
+			mousePoint = arg0.getPoint();
+			double dx = mousePoint.getX() - lastMousePoint.getX();
+			double dy = mousePoint.getY() - lastMousePoint.getY();
+
+		}
+
 	}
 
+	public PlayerPanel(MancalaModel m) {
+
+		mancalaModel = m;
+		pitNum = mancalaModel.getData();
+		tf = mancalaModel.getText();
+		shapes = new Shape[14];
+
+		JPanel beadOption = new JPanel();
+		JButton three = new JButton("Three Stones");
+		JButton four = new JButton("Four Stones");
+		beadOption.add(three);
+		beadOption.add(four);
+
+		three.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mancalaModel.setBead(3);
+				for (int i = 0; i < pitNum.size(); i++) {
+					mancalaModel.update(i, 3.0);
+				}
+				mancalaModel.update(6, 0.0);
+				mancalaModel.update(13, 0.0);
+
+			}
+		});
+
+		four.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				mancalaModel.setBead(4);
+				for (int i = 0; i < pitNum.size(); i++) {
+					mancalaModel.update(i, 4.0);
+				}
+				mancalaModel.update(6, 0.0);
+				mancalaModel.update(13, 0.0);
+			}
+		});
+
+		// by default viewStrategy is Ellipse
+
+		width = getWidth() / 8;
+		height = getHeight() / 2;
+
+		MouseListeners listeners = new MouseListeners();
+		addMouseListener(listeners);
+		addMouseMotionListener(listeners);
+
+		Icon playerIcon = new Icon() {
+
+			@Override
+			public int getIconHeight() {
+				// TODO Auto-generated method stub
+				return PANEL_HEIGHT;
+			}
+
+			@Override
+			public int getIconWidth() {
+				// TODO Auto-generated method stub
+				return PANEL_WIDTH;
+			}
+
+			/**
+			 * paints the board with the pits and circles
+			 * 
+			 * @author anhthy
+			 */
+			public void paintIcon(Component c, Graphics g, int x, int y) {
+				viewStrategy = m.getShape().get(0);
+
+				Graphics2D g2 = (Graphics2D) g;
+				g2.setColor(m.getColors().get(0));
+
+				double width = 900 / 8;
+				double height = 400 / 2;
+				double w = width;
+				double h = 25;
+
+				double dx = width - 10;
+				double dy = width + 10;
+
+				Shape circle = viewStrategy.createShape(w, h, dx, dy);
+				Shape circle2 = viewStrategy.createShape(w * 2, h, dx, dy);
+				Shape circle3 = viewStrategy.createShape(w * 3, h, dx, dy);
+				Shape circle4 = viewStrategy.createShape(w * 4, h, dx, dy);
+				Shape circle5 = viewStrategy.createShape(w * 5, h, dx, dy);
+				Shape circle6 = viewStrategy.createShape(w * 6, h, dx, dy);
+				Shape pitCircle = viewStrategy.createShape(5, h, width - 10, height * 2 - 100);
+				shapes[5] = (circle);
+				shapes[4] = (circle2);
+				shapes[3] = (circle3);
+				shapes[2] = (circle4);
+				shapes[1] = (circle5);
+				shapes[0] = (circle6);
+				shapes[6] = (pitCircle);
+
+				w = width;
+				h = height + 15;
+
+				Shape bcircle = viewStrategy.createShape(w, h, dx, dy);
+				Shape bcircle2 = viewStrategy.createShape(w * 2, h, dx, dy);
+				Shape bcircle3 = viewStrategy.createShape(w * 3, h, dx, dy);
+				Shape bcircle4 = viewStrategy.createShape(w * 4, h, dx, dy);
+				Shape bcircle5 = viewStrategy.createShape(w * 5, h, dx, dy);
+				Shape bcircle6 = viewStrategy.createShape(w * 6, h, dx, dy);
+				Shape bpitCircle = viewStrategy.createShape(5 + 7 * w, 25, width - 10, height * 2 - 100);
+				shapes[7] = (bcircle);
+				shapes[8] = (bcircle2);
+				shapes[9] = (bcircle3);
+				shapes[10] = (bcircle4);
+				shapes[11] = (bcircle5);
+				shapes[12] = (bcircle6);
+				shapes[13] = (bpitCircle);
+
+				double beadNum = mancalaModel.getBead();
+
+				int beadNumbers = (int) (beadNum * 12);
+
+				beads = new Shape[beadNumbers];
+
+				int beadCount = 0;
+				Shape bead;
+
+				for (int i = 0; i < shapes.length; i++) {
+					Shape drawn = shapes[i];
+
+					for (int j = 0; j < pitNum.get(i); j++) {
+						bead = new Bead(drawn, j).create();
+						beads[beadCount] = bead;
+
+						beadCount++;
+
+					}
+
+					g2.fill(drawn);
+					g2.draw(drawn);
+
+				}
+
+				for (int i = 0; i < beads.length; i++) {
+					Shape b = beads[i];
+					g2.setPaint(m.getColors().get(1));
+					g2.fill(b);
+					g2.draw(b);
+				}
+			}
+
+		};
+
+		this.add(new JLabel(playerIcon), BorderLayout.CENTER);
+		JPanel jp = new JPanel();
+		jp.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+
+		jp.add(tf);
+
+		JButton undo = new JButton("Undo");
+		undo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				undo();
+			}
+		});
+
+		jp.add(undo);
+		add(jp, BorderLayout.SOUTH);
+		jp.add(beadOption);
+		this.setTitle("Mancala");
+
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		pack();
+		setVisible(true);
+	}
+
+	public void undo() {
+
+		int pitNumber = mancalaModel.returnPitNum();
+		double pitState = mancalaModel.returnPitState();
+		mancalaModel.update(pitNumber, pitState); // set back to previous state
+
+		int index = pitNumber + 1;
+
+		// revert states of subsequence pits
+		for (int i = 0; i < pitState; i++) {
+			if (players.get(1)) { // player 2 does undo
+				if (index == 6) {
+					index = 7;
+				} else if (index == 13) {
+					index = 0;
+				}
+				mancalaModel.updatePlayer(0, false);
+				mancalaModel.updatePlayer(1, true);
+				mancalaModel.updateText("Current Player: Player 2");
+			} else {
+				if (index == 13) {
+					index = 0;
+				}
+				mancalaModel.updatePlayer(0, true);
+				mancalaModel.updatePlayer(1, false);
+				mancalaModel.updateText("Current Player: Player 1");
+
+			}
+			mancalaModel.Decrement(index);
+			index++;
+		}
+
+	}
+
+	@Override
+	public void stateChanged(ChangeEvent e) {
+		pitNum = mancalaModel.getData();
+		repaint();
+	}
 }
