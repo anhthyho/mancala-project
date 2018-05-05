@@ -21,7 +21,8 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 	private ArrayList<Double> pitNum;
 	private Shape[] beads;
 	private Shape[] shapes;
-	private boolean[] players;
+	private JTextField tf;
+	private ArrayList<Boolean> players;
 	private MancalaModel mancalaModel;
 	private ViewStrategy viewStrategy;
 
@@ -62,35 +63,50 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 					mancalaModel.saveState(i);
 					mancalaModel.update(i, (double) 0);
 
-					if (players[0]=true){
+					if (players.get(0) == true) {
+						int lastPit = 0;
 						for (int j = i; j < numberOfStones + i; j++) {
 							if (j + 1 != 13) {
 
 								mancalaModel.update((j + 1) % 14, (pitNum.get((j + 1) % 14) + 1));
+								lastPit = (j + 1) % 14;
 							} else if (j + 1 == 13) {
 								mancalaModel.update((int) (numberOfStones + i + 1) % 14,
 										(pitNum.get((int) (numberOfStones + i + 1) % 14) + 1));
+								lastPit = (j + 1) % 14;
 							}
-
+							
 						}
-					}
-					else{
+						if (lastPit >= 7 && lastPit <= 13) {
+							mancalaModel.updatePlayer(0, false);
+							mancalaModel.updatePlayer(1, true);
+							mancalaModel.updateText("Current Player: Player 2");
+						}
+					} else {
+						int lastPit = 0;
 						for (int j = i; j < numberOfStones + i; j++) {
 							if (j + 1 != 6) {
 
 								mancalaModel.update((j + 1) % 14, (pitNum.get((j + 1) % 14) + 1));
-							} else if (j + 1 == 13) {
+								lastPit = (j + 1) % 14;
+							} else if (j + 1 == 6) {
 								mancalaModel.update((int) (numberOfStones + i + 1) % 14,
 										(pitNum.get((int) (numberOfStones + i + 1) % 14) + 1));
+								lastPit = (j + 1) % 14;
 							}
-
+							
 						}
-					}
-					
+						if (lastPit >= 0 && lastPit <= 6) {
+							mancalaModel.updatePlayer(0, true);
+							mancalaModel.updatePlayer(1, false);
+							mancalaModel.updateText("Current Player: Player 1");
+						}
 
+					}
 				}
 
 			}
+
 		}
 
 		@Override
@@ -114,13 +130,43 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 	}
 
 	public PlayerPanel(MancalaModel m) {
+
 		mancalaModel = m;
 		pitNum = mancalaModel.getData();
+		tf = mancalaModel.getText();
+		shapes = new Shape[14];
+
+		JPanel beadOption = new JPanel();
+		JButton three = new JButton("Three Stones");
+		JButton four = new JButton("Four Stones");
+		beadOption.add(three);
+		beadOption.add(four);
+
+		three.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mancalaModel.setBead(3);
+				for (int i = 0; i < pitNum.size(); i++) {
+					mancalaModel.update(i, 3.0);
+				}
+				mancalaModel.update(6, 0.0);
+				mancalaModel.update(13, 0.0);
+
+			}
+		});
+
+		four.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				mancalaModel.setBead(4);
+				for (int i = 0; i < pitNum.size(); i++) {
+					mancalaModel.update(i, 4.0);
+				}
+				mancalaModel.update(6, 0.0);
+				mancalaModel.update(13, 0.0);
+			}
+		});
 
 		// by default viewStrategy is Ellipse
-
-		shapes = new Shape[14];
-		beads = new Shape[36];
 
 		width = getWidth() / 8;
 		height = getHeight() / 2;
@@ -195,14 +241,22 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 				shapes[12] = (bcircle6);
 				shapes[13] = (bpitCircle);
 
+				double beadNum = mancalaModel.getBead();
+
+				int beadNumbers = (int) (beadNum * 12);
+
+				beads = new Shape[beadNumbers];
+
 				int beadCount = 0;
 				Shape bead;
+
 				for (int i = 0; i < shapes.length; i++) {
 					Shape drawn = shapes[i];
 
 					for (int j = 0; j < pitNum.get(i); j++) {
 						bead = new Bead(drawn, j).create();
 						beads[beadCount] = bead;
+
 						beadCount++;
 
 					}
@@ -222,7 +276,11 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 
 		};
 
-		add(new JLabel(playerIcon));
+		this.add(new JLabel(playerIcon), BorderLayout.CENTER);
+		JPanel jp = new JPanel();
+		jp.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+
+		jp.add(tf);
 
 		JButton undo = new JButton("Undo");
 		undo.addActionListener(new ActionListener() {
@@ -231,7 +289,9 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 			}
 		});
 
-		add(undo, BorderLayout.SOUTH);
+		jp.add(undo);
+		add(jp, BorderLayout.SOUTH);
+		jp.add(beadOption);
 		this.setTitle("Mancala");
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -244,23 +304,28 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 		int pitNumber = mancalaModel.returnPitNum();
 		double pitState = mancalaModel.returnPitState();
 		mancalaModel.update(pitNumber, pitState); // set back to previous state
-		System.out.println("Undo: " + pitNumber + ", " + pitState);
+
 		int index = pitNumber + 1;
 
 		// revert states of subsequence pits
 		for (int i = 0; i < pitState; i++) {
-			if (players[1]){
-				if (index==6){
-					index =7;
-				}
-				else if (index==13){
+			if (players.get(1)) { // player 2 does undo
+				if (index == 6) {
+					index = 7;
+				} else if (index == 13) {
 					index = 0;
 				}
-			}
-			else {
-				if (index==13){
-					index =1;
+				mancalaModel.updatePlayer(0, false);
+				mancalaModel.updatePlayer(1, true);
+				mancalaModel.updateText("Current Player: Player 2");
+			} else {
+				if (index == 13) {
+					index = 0;
 				}
+				mancalaModel.updatePlayer(0, true);
+				mancalaModel.updatePlayer(1, false);
+				mancalaModel.updateText("Current Player: Player 1");
+
 			}
 			mancalaModel.Decrement(index);
 			index++;
