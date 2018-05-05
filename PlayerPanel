@@ -14,7 +14,7 @@ import java.util.Random;
 
 public class PlayerPanel extends JFrame implements ChangeListener {
 
-	private static final int PANEL_WIDTH = 1000;
+	private static final int PANEL_WIDTH = 900;
 	private static final int PANEL_HEIGHT = 400;
 	private double width;
 	private double height;
@@ -63,7 +63,7 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 					mancalaModel.saveState(i);
 					mancalaModel.update(i, (double) 0);
 
-					if (players.get(0) == true) { //player 1 turn 
+					if (players.get(0) == true) { // player 1 turn
 						int lastPit = 0;
 						for (int j = i; j < numberOfStones + i; j++) {
 							if (j + 1 != 13) {
@@ -75,22 +75,21 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 										(pitNum.get((int) (numberOfStones + i + 1) % 14) + 1));
 								lastPit = (j + 1) % 14;
 							}
-							
+
 						}
 						if (lastPit >= 7 && lastPit <= 13) {
-							if (pitNum.get(lastPit)==1){
-								mancalaModel.update(6, pitNum.get(13)+pitNum.get(6));
+							if (pitNum.get(lastPit) == 1) {
+								mancalaModel.update(6, pitNum.get(13) + pitNum.get(6));
 								mancalaModel.update(13, 0.0);
-							}
-							else {
+							} else {
 								mancalaModel.updatePlayer(0, false);
 								mancalaModel.updatePlayer(1, true);
 								mancalaModel.updateText("Current Player: Player 2");
 							}
-							
+
 						}
-						
-					} else { //player 2 turn
+
+					} else { // player 2 turn
 						int lastPit = 0;
 						for (int j = i; j < numberOfStones + i; j++) {
 							if (j + 1 != 6) {
@@ -102,19 +101,18 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 										(pitNum.get((int) (numberOfStones + i + 1) % 14) + 1));
 								lastPit = (j + 1) % 14;
 							}
-							
+
 						}
 						if (lastPit >= 0 && lastPit <= 6) {
-							if (pitNum.get(lastPit)==1){
-								mancalaModel.update(13, pitNum.get(13)+pitNum.get(6));
+							if (pitNum.get(lastPit) == 1) {
+								mancalaModel.update(13, pitNum.get(13) + pitNum.get(6));
 								mancalaModel.update(6, 0.0);
-							}
-							else {
+							} else {
 								mancalaModel.updatePlayer(0, true);
 								mancalaModel.updatePlayer(1, false);
 								mancalaModel.updateText("Current Player: Player 1");
 							}
-							
+
 						}
 
 					}
@@ -222,7 +220,7 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 				double width = 900 / 8;
 				double height = 400 / 2;
 				double w = width;
-				double h = 25;
+				double h = 60;
 
 				double dx = width - 10;
 				double dy = width + 10;
@@ -282,6 +280,8 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 
 					g2.fill(drawn);
 					g2.draw(drawn);
+					
+					
 
 				}
 
@@ -291,11 +291,37 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 					g2.fill(b);
 					g2.draw(b);
 				}
+				
+				for (int i = 0; i < shapes.length; i++) {
+					Shape drawn = shapes[i];
+					g2.setColor(Color.BLACK);
+					Font font = new Font("Comic Sans MS", Font.BOLD, 18);
+					g2.setFont(font);
+					if (i<6){
+						g2.drawString("B"+(i+1), (int)drawn.getBounds2D().getCenterX()-10, (int)drawn.getBounds2D().getY()-10);
+					}
+					else if (i==6){
+						g2.drawString("Mancala B", (int)drawn.getBounds2D().getCenterX()-40, (int)drawn.getBounds2D().getY()-10);
+					}
+					else if (i==13){
+						g2.drawString("Mancala A", (int)drawn.getBounds2D().getCenterX()-40, (int)(drawn.getBounds2D().getY()+drawn.getBounds2D().getHeight()+20));
+					}
+					else {
+						g2.drawString("A"+(i-6), (int)drawn.getBounds2D().getCenterX()-10, (int)(drawn.getBounds2D().getY()+drawn.getBounds2D().getHeight()+20));
+					}
+					
+				}
+
+				
 			}
 
 		};
+		
 
-		this.add(new JLabel(playerIcon), BorderLayout.CENTER);
+		JLabel playerBoard = new JLabel();
+		playerBoard.setIcon(playerIcon);
+		this.add(playerBoard, BorderLayout.CENTER);
+		//this.add(new JLabel(playerIcon), BorderLayout.CENTER);
 		JPanel jp = new JPanel();
 		jp.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 
