@@ -25,7 +25,7 @@ public class MancalaModel {
 		}
 		data.set(6, (double) 0);
 		data.set(13, (double) 0);
-		tf = new JTextField("Current Player: Player 1");
+		tf = new JTextField("Current Player: Player 1(B)");
 		this.colors = colors;
 		this.shape = shape;
 		this.beadNumber = beadNumber;
@@ -131,7 +131,10 @@ public class MancalaModel {
 	}
 
 	public void Decrement(int pitNum) {
-		data.set(pitNum, data.get(pitNum) - 1);
+		if (data.get(pitNum)>0){
+			data.set(pitNum, data.get(pitNum) - 1);
+		}
+		
 		for (ChangeListener l : listeners) {
 			l.stateChanged(new ChangeEvent(this));
 		}
