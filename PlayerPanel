@@ -84,7 +84,7 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 							} else {
 								mancalaModel.updatePlayer(0, false);
 								mancalaModel.updatePlayer(1, true);
-								mancalaModel.updateText("Current Player: Player 2");
+								mancalaModel.updateText("Current Player: Player 2(A)");
 							}
 
 						}
@@ -110,7 +110,7 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 							} else {
 								mancalaModel.updatePlayer(0, true);
 								mancalaModel.updatePlayer(1, false);
-								mancalaModel.updateText("Current Player: Player 1");
+								mancalaModel.updateText("Current Player: Player 1(B)");
 							}
 
 						}
@@ -362,14 +362,14 @@ public class PlayerPanel extends JFrame implements ChangeListener {
 				}
 				mancalaModel.updatePlayer(0, false);
 				mancalaModel.updatePlayer(1, true);
-				mancalaModel.updateText("Current Player: Player 2");
+				mancalaModel.updateText("Current Player: Player 2(A)");
 			} else {
 				if (index == 13) {
 					index = 0;
 				}
 				mancalaModel.updatePlayer(0, true);
 				mancalaModel.updatePlayer(1, false);
-				mancalaModel.updateText("Current Player: Player 1");
+				mancalaModel.updateText("Current Player: Player 1(B)");
 
 			}
 			mancalaModel.Decrement(index);
