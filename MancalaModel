@@ -2,25 +2,36 @@ import java.awt.Color;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 
+import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 public class MancalaModel {
 	private ArrayList<Double> data;
-	private ArrayList<Color> colors; 
+	private ArrayList<Color> colors;
 	private ArrayList<ChangeListener> listeners;
 	private ArrayList<ViewStrategy> shape;
-	private boolean[] players; 
+	private ArrayList<Boolean> players;
+	private JTextField tf;
 	private int pitNumber;
 	private double pitState;
+	private double beadNumber;
 
-	public MancalaModel(ArrayList<Double> pitNum, ArrayList<Color>colors, ArrayList<ViewStrategy> shape) {
-		data = pitNum;
-		this.colors = colors; 
-		this.shape = shape; 
-		players = new boolean[2]; 
-		players[0]=true; //1 means their turn
-		players[1]=false; //0 means not their turn 
+	public MancalaModel(ArrayList<Color> colors, ArrayList<ViewStrategy> shape, Double beadNumber) {
+		// data = pitNum;
+		data = new ArrayList<>();
+		for (int i = 0; i < 14; i++) {
+			data.add(beadNumber);
+		}
+		data.set(6, (double) 0);
+		data.set(13, (double) 0);
+		tf = new JTextField("Current Player: Player 1");
+		this.colors = colors;
+		this.shape = shape;
+		this.beadNumber = beadNumber;
+		players = new ArrayList<>();
+		players.add(true); // 1 means their turn
+		players.add(false); // 0 means not their turn
 		listeners = new ArrayList<ChangeListener>();
 	}
 
@@ -32,17 +43,25 @@ public class MancalaModel {
 	public ArrayList<Double> getData() {
 		return (ArrayList<Double>) (data.clone());
 	}
-	
-	public ArrayList<Color> getColors(){
-		return (ArrayList<Color>) (colors.clone()); 
+
+	public ArrayList<Color> getColors() {
+		return (ArrayList<Color>) (colors.clone());
 	}
-	
-	public ArrayList<ViewStrategy> getShape(){
-		return (ArrayList<ViewStrategy>)(shape.clone()); 
+
+	public ArrayList<ViewStrategy> getShape() {
+		return (ArrayList<ViewStrategy>) (shape.clone());
 	}
-	
-	public boolean[] getPlayers(){
-		return (boolean[])(players.clone()); 
+
+	public ArrayList<Boolean> getPlayers() {
+		return (ArrayList<Boolean>) (players.clone());
+	}
+
+	public double getBead() {
+		return beadNumber;
+	}
+
+	public JTextField getText() {
+		return tf;
 	}
 
 	/**
@@ -54,14 +73,10 @@ public class MancalaModel {
 	public void attach(PlayerPanel playerPanel) {
 		listeners.add(playerPanel);
 	}
-	
-	public void attach(OptionPanel op){
-		listeners.add(op); 
-	}
-	
-	
 
-	
+	public void attach(OptionPanel op) {
+		listeners.add(op);
+	}
 
 	/**
 	 * Change the data in the model at a particular location
@@ -71,55 +86,75 @@ public class MancalaModel {
 	 * @param value
 	 *            the new value
 	 */
-	public void update(int location, Double value) { 
-		System.out.println("update: " + location +", "+ value);
+	public void update(int location, Double value) {
+
 		data.set(location, value);
 		for (ChangeListener l : listeners) {
 			l.stateChanged(new ChangeEvent(this));
 		}
 	}
-	
+
 	public void updateColor(int location, Color value) {
 		colors.set(location, value);
 		for (ChangeListener l : listeners) {
 			l.stateChanged(new ChangeEvent(this));
 		}
 	}
-	
-	public void updateShape(int location, ViewStrategy c){
+
+	public void updateShape(int location, ViewStrategy c) {
 		shape.set(location, c);
 		for (ChangeListener l : listeners) {
 			l.stateChanged(new ChangeEvent(this));
 		}
 	}
-	
-	public void Decrement(int pitNum)
-	{
+
+	public void updatePlayer(int location, boolean b) {
+		players.set(location, b);
+		for (ChangeListener l : listeners) {
+			l.stateChanged(new ChangeEvent(this));
+		}
+	}
+
+	public void updateText(String c) {
+		tf.setText(c);
+		for (ChangeListener l : listeners) {
+			l.stateChanged(new ChangeEvent(this));
+		}
+	}
+
+	public void setBead(int b) {
+		beadNumber = b;
+
+		for (ChangeListener l : listeners) {
+			l.stateChanged(new ChangeEvent(this));
+		}
+	}
+
+	public void Decrement(int pitNum) {
 		data.set(pitNum, data.get(pitNum) - 1);
 		for (ChangeListener l : listeners) {
 			l.stateChanged(new ChangeEvent(this));
 		}
-		System.out.println("dec: "+ pitNum +", "+ (data.get(pitNum)));
+
 	}
-	
+
 	/**
 	 * Save the state of a pit, call before making move
+	 * 
 	 * @param pitNum
 	 */
-	public void saveState(int pitNum)
-	{
+	public void saveState(int pitNum) {
 		pitState = data.get(pitNum);
 		pitNumber = pitNum;
-		
+
 	}
-	
-	public int returnPitNum(){
-		return pitNumber; 
+
+	public int returnPitNum() {
+		return pitNumber;
 	}
-	
-	public double returnPitState(){
-		return pitState; 
+
+	public double returnPitState() {
+		return pitState;
 	}
-	
-	
+
 }
